@@ -1,0 +1,29 @@
+{
+	"name": "@nebula-ai/openclaw-nebula",
+	"version": "2.0.0",
+	"type": "module",
+	"description": "OpenClaw Nebula memory plugin",
+	"license": "MIT",
+	"dependencies": {
+		"@nebula-ai/sdk": "^1.0.0",
+		"@sinclair/typebox": "0.34.47"
+	},
+	"scripts": {
+		"check-types": "tsc --noEmit",
+		"lint": "bunx @biomejs/biome ci .",
+		"lint:fix": "bunx @biomejs/biome check --write .",
+		"build:lib": "esbuild lib/validate.ts --bundle --minify --format=esm --platform=node --target=es2022 --outfile=lib/validate.js"
+	},
+	"peerDependencies": {
+		"openclaw": ">=2026.1.29"
+	},
+	"openclaw": {
+		"extensions": [
+			"./index.ts"
+		]
+	},
+	"devDependencies": {
+		"esbuild": "^0.27.2",
+		"typescript": "^5.9.3"
+	}
+}

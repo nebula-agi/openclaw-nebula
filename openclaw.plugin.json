@@ -1,0 +1,63 @@
+{
+	"id": "openclaw-nebula",
+	"kind": "memory",
+	"uiHints": {
+		"apiKey": {
+			"label": "Nebula API Key",
+			"sensitive": true,
+			"placeholder": "your_api_key_here",
+			"help": "Your API key from nebula-ai.com (or use ${NEBULA_API_KEY})"
+		},
+		"collectionName": {
+			"label": "Collection Name",
+			"placeholder": "openclaw_myhostname",
+			"help": "Memory collection name. Default: openclaw_{hostname}. All channels share this.",
+			"advanced": true
+		},
+		"autoRecall": {
+			"label": "Auto-Recall",
+			"help": "Inject relevant memories + user profile before every AI turn"
+		},
+		"autoCapture": {
+			"label": "Auto-Capture",
+			"help": "Automatically store important information from conversations"
+		},
+		"maxRecallResults": {
+			"label": "Max Recall Results",
+			"placeholder": "10",
+			"help": "Maximum memories injected into context per turn",
+			"advanced": true
+		},
+		"profileFrequency": {
+			"label": "Profile Injection Frequency",
+			"placeholder": "50",
+			"help": "Inject full profile (static + dynamic) every N turns. Search results are injected every turn.",
+			"advanced": true
+		},
+		"captureMode": {
+			"label": "Capture Mode",
+			"help": "'all' (default) = filter out short texts and injected context, 'everything' = capture all messages",
+			"advanced": true
+		},
+		"debug": {
+			"label": "Debug Logging",
+			"help": "Enable verbose debug logs for API calls and responses",
+			"advanced": true
+		}
+	},
+	"configSchema": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"apiKey": { "type": "string" },
+			"collectionName": { "type": "string" },
+			"autoRecall": { "type": "boolean" },
+			"autoCapture": { "type": "boolean" },
+			"maxRecallResults": { "type": "number", "minimum": 1, "maximum": 20 },
+			"profileFrequency": { "type": "number", "minimum": 1, "maximum": 500 },
+			"captureMode": { "type": "string", "enum": ["everything", "all"] },
+			"debug": { "type": "boolean" }
+		},
+		"required": []
+	}
+}
