@@ -12,15 +12,20 @@ Restart OpenClaw after installation.
 
 ## Configuration
 
-### Required: API Key
+### Quick Setup (Copy & Paste)
 
-Set your Nebula API key:
+1. Get your API key at [trynebula.ai](https://trynebula.ai)
+2. Run this command (replace `sk-xxx` with your actual key):
 
 ```bash
-export NEBULA_API_KEY="your_nebula_api_key"
+echo "NEBULA_API_KEY=sk-xxx" >> ~/.openclaw/.env && openclaw gateway restart
 ```
 
-Or in `~/.openclaw/config.json`:
+Done! The plugin will automatically read your API key from the .env file.
+
+### Alternative: Config File
+
+Edit `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -29,7 +34,7 @@ Or in `~/.openclaw/config.json`:
       "openclaw-nebula": {
         "enabled": true,
         "config": {
-          "apiKey": "${NEBULA_API_KEY}"
+          "apiKey": "your_api_key_here"
         }
       }
     }
@@ -37,7 +42,7 @@ Or in `~/.openclaw/config.json`:
 }
 ```
 
-Get your API key at [trynebula.ai](https://trynebula.ai)
+Then restart: `openclaw gateway restart`
 
 ### Optional Settings
 
