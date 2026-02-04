@@ -19,6 +19,9 @@ function getLastTurn(messages: unknown[]): unknown[] {
 	return lastUserIdx >= 0 ? messages.slice(lastUserIdx) : messages
 }
 
+// Track conversation memory_id per session for appending messages
+const sessionConversationMap = new Map<string, string>()
+
 export function buildCaptureHandler(
 	client: NebulaClient,
 	cfg: NebulaConfig,
@@ -33,67 +36,70 @@ export function buildCaptureHandler(
 			return
 
 		const lastTurn = getLastTurn(event.messages)
+		const sk = getSessionKey()
+		const sessionId = sk ? buildDocumentId(sk) : "default"
+		const timestamp = new Date().toISOString()
 
-		const texts: string[] = []
+		// Get existing conversation memory_id for this session (if any)
+		let conversationMemoryId = sessionConversationMap.get(sessionId)
+
 		for (const msg of lastTurn) {
 			if (!msg || typeof msg !== "object") continue
 			const msgObj = msg as Record<string, unknown>
 			const role = msgObj.role
 			if (role !== "user" && role !== "assistant") continue
 
-			const content = msgObj.content
+			const msgContent = msgObj.content
+			let content = ""
 
-			const parts: string[] = []
-
-			if (typeof content === "string") {
-				parts.push(content)
-			} else if (Array.isArray(content)) {
-				for (const block of content) {
+			if (typeof msgContent === "string") {
+				content = msgContent
+			} else if (Array.isArray(msgContent)) {
+				const parts: string[] = []
+				for (const block of msgContent) {
 					if (!block || typeof block !== "object") continue
 					const b = block as Record<string, unknown>
 					if (b.type === "text" && typeof b.text === "string") {
 						parts.push(b.text)
 					}
 				}
+				content = parts.join("\n")
 			}
 
-			if (parts.length > 0) {
-				texts.push(`[role: ${role}]\n${parts.join("\n")}\n[${role}:end]`)
+			// Clean up nebula context tags if in "all" mode
+			if (cfg.captureMode === "all") {
+				content = content
+					.replace(/<nebula-context>[\s\S]*?<\/nebula-context>\s*/g, "")
+					.trim()
 			}
-		}
 
-		const captured =
-			cfg.captureMode === "all"
-				? texts
-						.map((t) =>
-							t
-								.replace(
-									/<nebula-context>[\s\S]*?<\/nebula-context>\s*/g,
-									"",
-								)
-								.trim(),
-						)
-						.filter((t) => t.length >= 10)
-				: texts
+			// Skip empty or very short content
+			if (content.length < 10) continue
 
-		if (captured.length === 0) return
-
-		const content = captured.join("\n\n")
-		const sk = getSessionKey()
-		const customId = sk ? buildDocumentId(sk) : undefined
-
-		log.debug(
-			`capturing ${captured.length} texts (${content.length} chars) → ${customId ?? "no-session-key"}`,
-		)
-
-		try {
-			await client.addMemory(
-				content,
-				{ source: "openclaw", timestamp: new Date().toISOString() },
-				customId,
+			log.debug(
+				`capturing ${role} message (${content.length} chars) → memory_id: ${conversationMemoryId ?? "new"}`,
 			)
-		} catch (err) {
-			log.error("capture failed", err)
+
+			try {
+				// Store message directly to Nebula with role and memory_id
+				const result = await client.addMemory(
+					content,
+					{ source: "openclaw", session: sessionId, timestamp },
+					{
+						role: role as "user" | "assistant",
+						...(conversationMemoryId && { memory_id: conversationMemoryId }),
+					},
+				)
+
+				// If this was the first message, save the memory_id for subsequent messages
+				if (!conversationMemoryId && result.id) {
+					conversationMemoryId = result.id
+					sessionConversationMap.set(sessionId, result.id)
+					log.debug(`started new conversation: ${result.id}`)
+				}
+			} catch (err) {
+				log.error(`capture failed for ${role} message`, err)
+			}
 		}
 	}
 }

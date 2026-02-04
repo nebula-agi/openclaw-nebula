@@ -31,14 +31,14 @@ export function registerStoreTool(
 			) {
 				const category = params.category ?? detectCategory(params.text)
 				const sk = getSessionKey()
-				const customId = sk ? buildDocumentId(sk) : undefined
+				const sessionId = sk ? buildDocumentId(sk) : undefined
 
-				log.debug(`store tool: category="${category}" customId="${customId}"`)
+				log.debug(`store tool: category="${category}" session="${sessionId}"`)
 
+				// Store directly to Nebula without pre-chunking
 				await client.addMemory(
 					params.text,
-					{ type: category, source: "openclaw_tool" },
-					customId,
+					{ type: category, source: "openclaw_tool", session: sessionId ?? "tool" },
 				)
 
 				const preview =

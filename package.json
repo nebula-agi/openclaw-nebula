@@ -15,7 +15,7 @@
 		"build:lib": "esbuild lib/validate.ts --bundle --minify --format=esm --platform=node --target=es2022 --outfile=lib/validate.js"
 	},
 	"peerDependencies": {
-		"openclaw": ">=2026.1.29"
+		"openclaw": "^2026.2.2-3"
 	},
 	"openclaw": {
 		"extensions": [

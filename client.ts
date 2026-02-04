@@ -94,22 +94,40 @@ export class NebulaClient {
 	async addMemory(
 		content: string,
 		metadata?: Record<string, string | number | boolean>,
-		customId?: string,
+		options?: {
+			role?: "user" | "assistant"
+			memory_id?: string
+		},
 	): Promise<{ id: string }> {
 		const collectionId = await this.ensureCollection()
 		const cleaned = sanitizeContent(content)
 
 		log.debugRequest("storeMemory", {
 			contentLength: cleaned.length,
-			customId,
+			role: options?.role,
+			memory_id: options?.memory_id,
 			metadata,
 		})
 
-		const memoryId = await this.client.storeMemory({
+		const storePayload: Record<string, unknown> = {
 			collection_id: collectionId,
-			content: cleaned,
 			metadata: metadata as Record<string, unknown> | undefined,
-		})
+		}
+
+		if (options?.memory_id && options?.role) {
+			// Appending to existing conversation - SDK requires array format
+			storePayload.content = [{ content: cleaned, role: options.role }]
+			storePayload.memory_id = options.memory_id
+		} else if (options?.role) {
+			// New conversation - SDK handles string + role
+			storePayload.content = cleaned
+			storePayload.role = options.role
+		} else {
+			// Plain document storage
+			storePayload.content = cleaned
+		}
+
+		const memoryId = await this.client.storeMemory(storePayload)
 
 		log.debugResponse("storeMemory", { id: memoryId })
 		return { id: memoryId }
