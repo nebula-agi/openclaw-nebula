@@ -15,10 +15,10 @@ Restart OpenClaw after installation.
 ### Quick Setup (Copy & Paste)
 
 1. Get your API key at [trynebula.ai](https://trynebula.ai)
-2. Run this command (replace `sk-xxx` with your actual key):
+2. Run this command (replace `neb_xxx` with your actual key):
 
 ```bash
-echo "NEBULA_API_KEY=sk-xxx" >> ~/.openclaw/.env && openclaw gateway restart
+echo "NEBULA_API_KEY=neb_xxx" >> ~/.openclaw/.env && openclaw gateway restart
 ```
 
 Done! The plugin will automatically read your API key from the .env file.
