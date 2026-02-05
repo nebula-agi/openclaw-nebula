@@ -51,7 +51,6 @@ Then restart: `openclaw gateway restart`
 | `collectionName` | `openclaw_{hostname}` | Collection name for storing memories |
 | `autoRecall` | `true` | Auto-inject relevant memories before AI turns |
 | `autoCapture` | `true` | Auto-store conversations after AI turns |
-| `maxRecallResults` | `10` | Maximum memories injected per turn |
 | `debug` | `false` | Enable debug logging |
 
 ## Usage
@@ -85,12 +84,6 @@ nebula_search({ query: "coding preferences", limit: 5 })
 Delete a memory.
 ```typescript
 nebula_forget({ query: "outdated preference" })
-```
-
-#### `nebula_profile`
-Get user profile summary.
-```typescript
-nebula_profile({ query: "programming habits" })
 ```
 
 ### Slash Commands

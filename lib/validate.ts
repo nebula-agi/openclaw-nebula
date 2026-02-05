@@ -120,22 +120,3 @@ export function sanitizeMetadata(
 	return result
 }
 
-/**
- * Validate recall configuration
- */
-export function validateRecallConfig(
-	maxRecallResults: number,
-	profileFrequency: number,
-): string[] {
-	const errors: string[] = []
-
-	if (!Number.isInteger(maxRecallResults) || maxRecallResults < 1 || maxRecallResults > 20) {
-		errors.push("maxRecallResults must be an integer between 1 and 20")
-	}
-
-	if (!Number.isInteger(profileFrequency) || profileFrequency < 1 || profileFrequency > 500) {
-		errors.push("profileFrequency must be an integer between 1 and 500")
-	}
-
-	return errors
-}

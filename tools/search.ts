@@ -2,6 +2,7 @@ import { Type } from "@sinclair/typebox"
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk"
 import type { NebulaClient } from "../client.ts"
 import type { NebulaConfig } from "../config.ts"
+import { formatSearchResults } from "../lib/format.ts"
 import { log } from "../logger.ts"
 
 export function registerSearchTool(
@@ -38,14 +39,7 @@ export function registerSearchTool(
 					}
 				}
 
-				const text = results
-					.map((r, i) => {
-						const score = r.similarity
-							? ` (${(r.similarity * 100).toFixed(0)}%)`
-							: ""
-						return `${i + 1}. ${r.content || r.memory || ""}${score}`
-					})
-					.join("\n")
+				const text = formatSearchResults(results)
 
 				return {
 					content: [

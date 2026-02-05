@@ -9,22 +9,8 @@ import { log } from "./logger.ts"
 export type SearchResult = {
 	id: string
 	content: string
-	memory?: string
 	similarity?: number
 	metadata?: Record<string, unknown>
-}
-
-export type ProfileSearchResult = {
-	memory?: string
-	updatedAt?: string
-	similarity?: number
-	[key: string]: unknown
-}
-
-export type ProfileResult = {
-	static: string[]
-	dynamic: string[]
-	searchResults: ProfileSearchResult[]
 }
 
 type Collection = {
@@ -151,64 +137,12 @@ export class NebulaClient {
 		const results: SearchResult[] = utterances.slice(0, limit).map((r) => ({
 			id: r.chunk_id,
 			content: r.text ?? "",
-			memory: r.text,
 			similarity: r.activation_score,
 			metadata: r.metadata ?? undefined,
 		}))
 
 		log.debugResponse("search", { count: results.length })
 		return results
-	}
-
-	async getProfile(query?: string): Promise<ProfileResult> {
-		const collectionId = await this.ensureCollection()
-
-		log.debugRequest("getProfile", { collectionId, query })
-
-		// Use a meaningful default query if none provided
-		const searchQuery = query || "user profile preferences facts"
-		const response = await this.client.search({
-			query: searchQuery,
-			collection_ids: [collectionId],
-		})
-
-		const allUtterances = response.utterances || []
-
-		const staticFacts = allUtterances.filter(
-			(r) =>
-				r.metadata?.type === "preference" ||
-				r.metadata?.type === "fact" ||
-				r.metadata?.type === "profile",
-		)
-
-		const dynamicContext = allUtterances.filter(
-			(r) =>
-				r.metadata?.type === "decision" ||
-				r.metadata?.type === "conversation" ||
-				!r.metadata?.type,
-		)
-
-		const result: ProfileResult = {
-			static: staticFacts.map((r) => r.text).filter(Boolean),
-			dynamic: dynamicContext
-				.slice(0, 10)
-				.map((r) => r.text)
-				.filter(Boolean),
-			searchResults: allUtterances.map((r) => ({
-				memory: r.text,
-				similarity: r.activation_score,
-				updatedAt: r.timestamp as string | undefined,
-				...r.metadata,
-			})),
-		}
-
-		log.debugResponse("getProfile", {
-			staticCount: result.static.length,
-			dynamicCount: result.dynamic.length,
-			searchCount: result.searchResults.length,
-		})
-
-		return result
 	}
 
 	async deleteMemory(id: string): Promise<{ id: string; forgotten: boolean }> {
@@ -233,7 +167,7 @@ export class NebulaClient {
 		const target = results[0]
 		await this.deleteMemory(target.id)
 
-		const preview = limitText(target.content || target.memory || "", 100)
+		const preview = limitText(target.content, 100)
 		return { success: true, message: `Forgot: "${preview}"` }
 	}
 

@@ -6,7 +6,7 @@
 			"label": "Nebula API Key",
 			"sensitive": true,
 			"placeholder": "your_api_key_here",
-			"help": "Your API key from nebula-ai.com (or use ${NEBULA_API_KEY})"
+			"help": "Your API key from trynebula.ai (or use ${NEBULA_API_KEY})"
 		},
 		"collectionName": {
 			"label": "Collection Name",
@@ -21,18 +21,6 @@
 		"autoCapture": {
 			"label": "Auto-Capture",
 			"help": "Automatically store important information from conversations"
-		},
-		"maxRecallResults": {
-			"label": "Max Recall Results",
-			"placeholder": "10",
-			"help": "Maximum memories injected into context per turn",
-			"advanced": true
-		},
-		"profileFrequency": {
-			"label": "Profile Injection Frequency",
-			"placeholder": "50",
-			"help": "Inject full profile (static + dynamic) every N turns. Search results are injected every turn.",
-			"advanced": true
 		},
 		"captureMode": {
 			"label": "Capture Mode",
@@ -53,8 +41,6 @@
 			"collectionName": { "type": "string" },
 			"autoRecall": { "type": "boolean" },
 			"autoCapture": { "type": "boolean" },
-			"maxRecallResults": { "type": "number", "minimum": 1, "maximum": 20 },
-			"profileFrequency": { "type": "number", "minimum": 1, "maximum": 500 },
 			"captureMode": { "type": "string", "enum": ["everything", "all"] },
 			"debug": { "type": "boolean" }
 		},

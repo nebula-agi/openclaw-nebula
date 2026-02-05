@@ -1,6 +1,7 @@
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk"
 import type { NebulaClient } from "../client.ts"
 import type { NebulaConfig } from "../config.ts"
+import { formatSearchResults } from "../lib/format.ts"
 import { log } from "../logger.ts"
 import { buildDocumentId, detectCategory } from "../memory.ts"
 
@@ -62,15 +63,10 @@ export function registerCommands(
 					return { text: `No memories found for: "${query}"` }
 				}
 
-				const lines = results.map((r, i) => {
-					const score = r.similarity
-						? ` (${(r.similarity * 100).toFixed(0)}%)`
-						: ""
-					return `${i + 1}. ${r.content || r.memory || ""}${score}`
-				})
+				const formatted = formatSearchResults(results)
 
 				return {
-					text: `Found ${results.length} memories:\n\n${lines.join("\n")}`,
+					text: `Found ${results.length} memories:\n\n${formatted}`,
 				}
 			} catch (err) {
 				log.error("/nebula-recall failed", err)

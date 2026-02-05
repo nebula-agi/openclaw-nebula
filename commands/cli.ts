@@ -1,6 +1,7 @@
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk"
 import type { NebulaClient } from "../client.ts"
 import type { NebulaConfig } from "../config.ts"
+import { formatSearchResults } from "../lib/format.ts"
 import { log } from "../logger.ts"
 
 export function registerCli(
@@ -30,36 +31,8 @@ export function registerCli(
 						return
 					}
 
-					for (const r of results) {
-						const score = r.similarity
-							? ` (${(r.similarity * 100).toFixed(0)}%)`
-							: ""
-						console.log(`- ${r.content || r.memory || ""}${score}`)
-					}
-				})
-
-			cmd
-				.command("profile")
-				.option("--query <q>", "Optional query to focus the profile")
-				.action(async (opts: { query?: string }) => {
-					log.debug(`cli profile: query="${opts.query ?? "(none)"}"`)
-
-					const profile = await client.getProfile(opts.query)
-
-					if (profile.static.length === 0 && profile.dynamic.length === 0) {
-						console.log("No profile information available yet.")
-						return
-					}
-
-					if (profile.static.length > 0) {
-						console.log("Stable Preferences:")
-						for (const f of profile.static) console.log(`  - ${f}`)
-					}
-
-					if (profile.dynamic.length > 0) {
-						console.log("Recent Context:")
-						for (const f of profile.dynamic) console.log(`  - ${f}`)
-					}
+					const formatted = formatSearchResults(results)
+					console.log(formatted)
 				})
 
 			cmd

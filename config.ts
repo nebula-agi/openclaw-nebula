@@ -7,8 +7,6 @@ export type NebulaConfig = {
 	collectionName: string
 	autoRecall: boolean
 	autoCapture: boolean
-	maxRecallResults: number
-	profileFrequency: number
 	captureMode: CaptureMode
 	debug: boolean
 }
@@ -18,8 +16,6 @@ const ALLOWED_KEYS = [
 	"collectionName",
 	"autoRecall",
 	"autoCapture",
-	"maxRecallResults",
-	"profileFrequency",
 	"captureMode",
 	"debug",
 ]
@@ -84,8 +80,6 @@ export function parseConfig(raw: unknown): NebulaConfig {
 			: defaultCollectionName(),
 		autoRecall: (cfg.autoRecall as boolean) ?? true,
 		autoCapture: (cfg.autoCapture as boolean) ?? true,
-		maxRecallResults: (cfg.maxRecallResults as number) ?? 10,
-		profileFrequency: (cfg.profileFrequency as number) ?? 50,
 		captureMode:
 			cfg.captureMode === "everything"
 				? ("everything" as const)

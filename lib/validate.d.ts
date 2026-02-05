@@ -25,7 +25,3 @@ export declare function validateContentLength(content: string, minLength?: numbe
     reason?: string;
 };
 export declare function sanitizeMetadata(metadata: Record<string, unknown>): Record<string, string | number | boolean>;
-/**
- * Validate recall configuration
- */
-export declare function validateRecallConfig(maxRecallResults: number, profileFrequency: number): string[];
