@@ -1,6 +1,6 @@
 # OpenClaw Nebula Memory Plugin
 
-Long-term semantic memory for OpenClaw powered by Nebula AI. Automatically captures conversations, recalls relevant context, and builds a persistent user profile.
+Long-term semantic memory for OpenClaw powered by Nebula AI. Automatically captures conversations and provides agent-driven search to recall relevant context from past interactions.
 
 ## Installation
 
@@ -50,27 +50,22 @@ Then restart: `openclaw gateway restart`
 | Option | Default | Description |
 |--------|---------|-------------|
 | `collectionName` | — | Optional display name for the collection |
-| `autoRecall` | `true` | Auto-inject relevant memories before AI turns |
 | `autoCapture` | `true` | Auto-store conversations after AI turns |
 | `debug` | `false` | Enable debug logging |
 
 ## Usage
 
-### Automatic Mode
+### Automatic Capture
 
-Once configured, the plugin works automatically:
+Once configured, the plugin automatically stores conversation turns as memories after each AI response.
 
-- **Auto-Capture**: Stores conversation turns as memories
-- **Auto-Recall**: Injects relevant context before AI responses
+### MCP Tool
 
-No manual intervention needed.
-
-### MCP Tools
-
-The AI can use these tools during conversations:
+The AI agent can search stored memories during conversations:
 
 #### `nebula_search`
-Search stored memories.
+Search stored memories for relevant context. The agent is encouraged to proactively use this tool to recall user preferences, past discussions, and relevant information before responding.
+
 ```typescript
 nebula_search({ query: "coding preferences", limit: 5 })
 ```

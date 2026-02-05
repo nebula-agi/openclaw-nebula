@@ -14,7 +14,7 @@ export function registerSearchTool(
 			name: "nebula_search",
 			label: "Memory Search",
 			description:
-				"Search through long-term memories for relevant information using Nebula.",
+				"Search through long-term memories for relevant information using Nebula. IMPORTANT: You should proactively call this tool at the start of each conversation turn to check for relevant context, user preferences, or past discussions before responding.",
 			parameters: Type.Object({
 				query: Type.String({ description: "Search query" }),
 				limit: Type.Optional(

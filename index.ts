@@ -4,10 +4,8 @@ import { registerCli } from "./commands/cli.ts"
 import { registerCommands } from "./commands/slash.ts"
 import { nebulaConfigSchema, parseConfig } from "./config.ts"
 import { buildCaptureHandler } from "./hooks/capture.ts"
-import { buildRecallHandler } from "./hooks/recall.ts"
 import { initLogger } from "./logger.ts"
 import { registerSearchTool } from "./tools/search.ts"
-import { registerStoreTool } from "./tools/store.ts"
 
 export default {
 	id: "openclaw-nebula",
@@ -27,18 +25,6 @@ export default {
 		const getSessionKey = () => sessionKey
 
 		registerSearchTool(api, client, cfg)
-		registerStoreTool(api, client, cfg, getSessionKey)
-
-		if (cfg.autoRecall) {
-			const recallHandler = buildRecallHandler(client, cfg)
-			api.on(
-				"before_agent_start",
-				(event: Record<string, unknown>, ctx: Record<string, unknown>) => {
-					if (ctx.sessionKey) sessionKey = ctx.sessionKey as string
-					return recallHandler(event)
-				},
-			)
-		}
 
 		if (cfg.autoCapture) {
 			api.on("agent_end", buildCaptureHandler(client, cfg, getSessionKey))
