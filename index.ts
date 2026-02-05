@@ -6,7 +6,6 @@ import { nebulaConfigSchema, parseConfig } from "./config.ts"
 import { buildCaptureHandler } from "./hooks/capture.ts"
 import { buildRecallHandler } from "./hooks/recall.ts"
 import { initLogger } from "./logger.ts"
-import { registerForgetTool } from "./tools/forget.ts"
 import { registerSearchTool } from "./tools/search.ts"
 import { registerStoreTool } from "./tools/store.ts"
 
@@ -29,7 +28,6 @@ export default {
 
 		registerSearchTool(api, client, cfg)
 		registerStoreTool(api, client, cfg, getSessionKey)
-		registerForgetTool(api, client, cfg)
 
 		if (cfg.autoRecall) {
 			const recallHandler = buildRecallHandler(client, cfg)

@@ -2,7 +2,6 @@ import { Type } from "@sinclair/typebox"
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk"
 import type { NebulaClient } from "../client.ts"
 import type { NebulaConfig } from "../config.ts"
-import { formatSearchResults } from "../lib/format.ts"
 import { log } from "../logger.ts"
 
 export function registerSearchTool(
@@ -39,23 +38,13 @@ export function registerSearchTool(
 					}
 				}
 
-				const text = formatSearchResults(results)
-
 				return {
 					content: [
 						{
 							type: "text" as const,
-							text: `Found ${results.length} memories:\n\n${text}`,
+							text: JSON.stringify(results, null, 2),
 						},
 					],
-					details: {
-						count: results.length,
-						memories: results.map((r) => ({
-							id: r.id,
-							content: r.content,
-							similarity: r.similarity,
-						})),
-					},
 				}
 			},
 		},

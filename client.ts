@@ -6,20 +6,12 @@ import {
 } from "./lib/validate.js"
 import { log } from "./logger.ts"
 
-export type SearchResult = {
-	id: string
-	content: string
-	similarity?: number
-	metadata?: Record<string, unknown>
-}
+// Just re-export Nebula's native types
+export type SearchResult = unknown
 
 type Collection = {
 	id: string
 	name: string
-}
-
-function limitText(text: string, max: number): string {
-	return text.length > max ? `${text.slice(0, max)}…` : text
 }
 
 export class NebulaClient {
@@ -133,72 +125,10 @@ export class NebulaClient {
 			collection_ids: [collectionId],
 		})
 
-		const utterances = response.utterances || []
-		const results: SearchResult[] = utterances.slice(0, limit).map((r) => ({
-			id: r.chunk_id,
-			content: r.text ?? "",
-			similarity: r.activation_score,
-			metadata: r.metadata ?? undefined,
-		}))
+		const utterances = (response.utterances || []).slice(0, limit)
 
-		log.debugResponse("search", { count: results.length })
-		return results
-	}
-
-	async deleteMemory(id: string): Promise<{ id: string; forgotten: boolean }> {
-		log.debugRequest("delete", { id })
-
-		await this.client.delete(id)
-
-		log.debugResponse("delete", { id, forgotten: true })
-		return { id, forgotten: true }
-	}
-
-	async forgetByQuery(
-		query: string,
-	): Promise<{ success: boolean; message: string }> {
-		log.debugRequest("forgetByQuery", { query })
-
-		const results = await this.search(query, 5)
-		if (results.length === 0) {
-			return { success: false, message: "No matching memory found to forget." }
-		}
-
-		const target = results[0]
-		await this.deleteMemory(target.id)
-
-		const preview = limitText(target.content, 100)
-		return { success: true, message: `Forgot: "${preview}"` }
-	}
-
-	async wipeAllMemories(): Promise<{ deletedCount: number }> {
-		const collectionId = await this.ensureCollection()
-
-		log.debugRequest("wipeAll", { collectionId })
-
-		const memories = await this.client.listMemories({
-			collection_ids: [collectionId],
-			limit: 1000,
-		})
-
-		if (!memories || memories.length === 0) {
-			log.debug("wipeAll: no memories found")
-			return { deletedCount: 0 }
-		}
-
-		const ids = memories.map((m) => m.memory_id).filter((id): id is string => Boolean(id))
-
-		log.debug(`wipeAll: found ${ids.length} memories, deleting in batches`)
-
-		let deletedCount = 0
-		for (let i = 0; i < ids.length; i += 100) {
-			const batch = ids.slice(i, i + 100)
-			await this.client.delete(batch)
-			deletedCount += batch.length
-		}
-
-		log.debugResponse("wipeAll", { deletedCount })
-		return { deletedCount }
+		log.debugResponse("search", { count: utterances.length })
+		return utterances as SearchResult[]
 	}
 
 	getCollectionName(): string {

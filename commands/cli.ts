@@ -1,7 +1,6 @@
 import type { OpenClawPluginApi } from "openclaw/plugin-sdk"
 import type { NebulaClient } from "../client.ts"
 import type { NebulaConfig } from "../config.ts"
-import { formatSearchResults } from "../lib/format.ts"
 import { log } from "../logger.ts"
 
 export function registerCli(
@@ -31,39 +30,7 @@ export function registerCli(
 						return
 					}
 
-					const formatted = formatSearchResults(results)
-					console.log(formatted)
-				})
-
-			cmd
-				.command("wipe")
-				.description("Delete ALL memories for this collection")
-				.action(async () => {
-					const collectionName = client.getCollectionName()
-					const readline = await import("node:readline")
-					const rl = readline.createInterface({
-						input: process.stdin,
-						output: process.stdout,
-					})
-
-					const answer = await new Promise<string>((resolve) => {
-						rl.question(
-							`This will permanently delete all memories in "${collectionName}". Type "yes" to confirm: `,
-							resolve,
-						)
-					})
-					rl.close()
-
-					if (answer.trim().toLowerCase() !== "yes") {
-						console.log("Aborted.")
-						return
-					}
-
-					log.debug(`cli wipe: collection="${collectionName}"`)
-					const result = await client.wipeAllMemories()
-					console.log(
-						`Wiped ${result.deletedCount} memories from "${collectionName}".`,
-					)
+					console.log(JSON.stringify(results, null, 2))
 				})
 		},
 		{ commands: ["nebula"] },

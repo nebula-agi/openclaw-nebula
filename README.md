@@ -80,12 +80,6 @@ Search stored memories.
 nebula_search({ query: "coding preferences", limit: 5 })
 ```
 
-#### `nebula_forget`
-Delete a memory.
-```typescript
-nebula_forget({ query: "outdated preference" })
-```
-
 ### Slash Commands
 
 #### `/nebula-remember <text>`
@@ -105,16 +99,6 @@ Search and display memories.
 #### Search memories
 ```bash
 openclaw nebula search "python coding style"
-```
-
-#### View profile
-```bash
-openclaw nebula profile
-```
-
-#### Delete all memories
-```bash
-openclaw nebula wipe
 ```
 
 **Warning:** Wipe permanently deletes all memories and cannot be undone.
