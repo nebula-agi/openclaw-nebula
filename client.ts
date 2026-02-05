@@ -2,71 +2,25 @@ import { Nebula } from "@nebula-ai/sdk"
 import {
 	sanitizeContent,
 	validateApiKeyFormat,
-	validateCollectionName,
 } from "./lib/validate.js"
 import { log } from "./logger.ts"
 
 // Just re-export Nebula's native types
 export type SearchResult = unknown
 
-type Collection = {
-	id: string
-	name: string
-}
-
 export class NebulaClient {
 	private client: Nebula
-	private collectionName: string
-	private collectionId: string | null = null
+	private collectionId: string
 
-	constructor(apiKey: string, collectionName: string) {
+	constructor(apiKey: string, collectionId: string) {
 		const keyCheck = validateApiKeyFormat(apiKey)
 		if (!keyCheck.valid) {
 			throw new Error(`invalid API key: ${keyCheck.reason}`)
 		}
 
-		const nameCheck = validateCollectionName(collectionName)
-		if (!nameCheck.valid) {
-			log.warn(`collection name warning: ${nameCheck.reason}`)
-		}
-
 		this.client = new Nebula({ apiKey })
-		this.collectionName = collectionName
-		log.info(`initialized (collection: ${collectionName})`)
-	}
-
-	private async ensureCollection(): Promise<string> {
-		if (this.collectionId) {
-			return this.collectionId
-		}
-
-		try {
-			log.debug(`ensuring collection exists: ${this.collectionName}`)
-
-			const collections = await this.client.listCollections()
-			const existing = collections.find(
-				(c: Collection) => c.name === this.collectionName,
-			)
-
-			if (existing) {
-				this.collectionId = existing.id
-				log.debug(`found existing collection: ${this.collectionId}`)
-			} else {
-				const created = await this.client.createCollection({
-					name: this.collectionName,
-					description: `OpenClaw Nebula memory storage for ${this.collectionName}`,
-				})
-				this.collectionId = created.id
-				log.debug(`created new collection: ${this.collectionId}`)
-			}
-
-			return this.collectionId
-		} catch (error) {
-			log.error("failed to ensure collection", error)
-			throw new Error(
-				`Failed to initialize collection "${this.collectionName}": ${error}`,
-			)
-		}
+		this.collectionId = collectionId
+		log.info(`initialized (collectionId: ${collectionId})`)
 	}
 
 	async addMemory(
@@ -77,7 +31,6 @@ export class NebulaClient {
 			memory_id?: string
 		},
 	): Promise<{ id: string }> {
-		const collectionId = await this.ensureCollection()
 		const cleaned = sanitizeContent(content)
 
 		log.debugRequest("storeMemory", {
@@ -88,7 +41,7 @@ export class NebulaClient {
 		})
 
 		const storePayload: Record<string, unknown> = {
-			collection_id: collectionId,
+			collection_id: this.collectionId,
 			metadata: metadata as Record<string, unknown> | undefined,
 		}
 
@@ -112,17 +65,15 @@ export class NebulaClient {
 	}
 
 	async search(query: string, limit = 5): Promise<SearchResult[]> {
-		const collectionId = await this.ensureCollection()
-
 		log.debugRequest("search", {
 			query,
 			limit,
-			collectionId,
+			collectionId: this.collectionId,
 		})
 
 		const response = await this.client.search({
 			query,
-			collection_ids: [collectionId],
+			collection_ids: [this.collectionId],
 		})
 
 		const utterances = (response.utterances || []).slice(0, limit)
@@ -131,11 +82,7 @@ export class NebulaClient {
 		return utterances as SearchResult[]
 	}
 
-	getCollectionName(): string {
-		return this.collectionName
-	}
-
-	getCollectionId(): string | null {
+	getCollectionId(): string {
 		return this.collectionId
 	}
 }

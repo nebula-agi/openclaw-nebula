@@ -8,10 +8,15 @@
 			"placeholder": "your_api_key_here",
 			"help": "Your API key from trynebula.ai (or use ${NEBULA_API_KEY})"
 		},
+		"collectionId": {
+			"label": "Nebula Collection ID",
+			"placeholder": "your_collection_id_here",
+			"help": "Your collection ID from trynebula.ai (or use ${NEBULA_COLLECTION_ID})"
+		},
 		"collectionName": {
 			"label": "Collection Name",
 			"placeholder": "openclaw_myhostname",
-			"help": "Memory collection name. Default: openclaw_{hostname}. All channels share this.",
+			"help": "Optional display name for the collection.",
 			"advanced": true
 		},
 		"autoRecall": {
@@ -38,6 +43,7 @@
 		"additionalProperties": false,
 		"properties": {
 			"apiKey": { "type": "string" },
+			"collectionId": { "type": "string" },
 			"collectionName": { "type": "string" },
 			"autoRecall": { "type": "boolean" },
 			"autoCapture": { "type": "boolean" },

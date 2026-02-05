@@ -1,10 +1,9 @@
-import { hostname } from "node:os"
-
 export type CaptureMode = "everything" | "all"
 
 export type NebulaConfig = {
 	apiKey: string
-	collectionName: string
+	collectionId: string
+	collectionName?: string
 	autoRecall: boolean
 	autoCapture: boolean
 	captureMode: CaptureMode
@@ -13,6 +12,7 @@ export type NebulaConfig = {
 
 const ALLOWED_KEYS = [
 	"apiKey",
+	"collectionId",
 	"collectionName",
 	"autoRecall",
 	"autoCapture",
@@ -48,10 +48,6 @@ function sanitizeTag(raw: string): string {
 		.replace(/^_|_$/g, "")
 }
 
-function defaultCollectionName(): string {
-	return sanitizeTag(`openclaw_${hostname()}`)
-}
-
 export function parseConfig(raw: unknown): NebulaConfig {
 	const cfg =
 		raw && typeof raw === "object" && !Array.isArray(raw)
@@ -73,11 +69,23 @@ export function parseConfig(raw: unknown): NebulaConfig {
 		)
 	}
 
+	const collectionId =
+		typeof cfg.collectionId === "string" && cfg.collectionId.length > 0
+			? resolveEnvVars(cfg.collectionId)
+			: process.env.NEBULA_COLLECTION_ID
+
+	if (!collectionId) {
+		throw new Error(
+			"nebula: collectionId is required (set in plugin config or NEBULA_COLLECTION_ID env var)",
+		)
+	}
+
 	return {
 		apiKey,
+		collectionId,
 		collectionName: cfg.collectionName
 			? sanitizeTag(cfg.collectionName as string)
-			: defaultCollectionName(),
+			: undefined,
 		autoRecall: (cfg.autoRecall as boolean) ?? true,
 		autoCapture: (cfg.autoCapture as boolean) ?? true,
 		captureMode:

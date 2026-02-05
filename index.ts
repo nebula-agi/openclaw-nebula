@@ -21,7 +21,7 @@ export default {
 
 		initLogger(api.logger, cfg.debug)
 
-		const client = new NebulaClient(cfg.apiKey, cfg.collectionName)
+		const client = new NebulaClient(cfg.apiKey, cfg.collectionId)
 
 		let sessionKey: string | undefined
 		const getSessionKey = () => sessionKey

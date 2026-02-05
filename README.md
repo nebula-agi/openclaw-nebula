@@ -14,14 +14,14 @@ Restart OpenClaw after installation.
 
 ### Quick Setup (Copy & Paste)
 
-1. Get your API key at [trynebula.ai](https://trynebula.ai)
-2. Run this command (replace `neb_xxx` with your actual key):
+1. Get your API key and collection ID at [trynebula.ai](https://trynebula.ai)
+2. Run this command (replace with your actual values):
 
 ```bash
-echo "NEBULA_API_KEY=neb_xxx" >> ~/.openclaw/.env && openclaw gateway restart
+echo -e "NEBULA_API_KEY=neb_xxx\nNEBULA_COLLECTION_ID=your_collection_id" >> ~/.openclaw/.env && openclaw gateway restart
 ```
 
-Done! The plugin will automatically read your API key from the .env file.
+Done! The plugin will automatically read your credentials from the .env file.
 
 ### Alternative: Config File
 
@@ -34,7 +34,8 @@ Edit `~/.openclaw/openclaw.json`:
       "openclaw-nebula": {
         "enabled": true,
         "config": {
-          "apiKey": "your_api_key_here"
+          "apiKey": "your_api_key_here",
+          "collectionId": "your_collection_id_here"
         }
       }
     }
@@ -48,7 +49,7 @@ Then restart: `openclaw gateway restart`
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `collectionName` | `openclaw_{hostname}` | Collection name for storing memories |
+| `collectionName` | — | Optional display name for the collection |
 | `autoRecall` | `true` | Auto-inject relevant memories before AI turns |
 | `autoCapture` | `true` | Auto-store conversations after AI turns |
 | `debug` | `false` | Enable debug logging |
@@ -107,8 +108,10 @@ openclaw nebula search "python coding style"
 
 ### Plugin won't load
 **Error:** `nebula: apiKey is required`
-
 Set the `NEBULA_API_KEY` environment variable or add it to your config file.
+
+**Error:** `nebula: collectionId is required`
+Set the `NEBULA_COLLECTION_ID` environment variable or add it to your config file. Get your collection ID from [trynebula.ai](https://trynebula.ai).
 
 ### No search results
 Nebula takes 5-10 seconds to index new memories. Wait after storing before searching.
