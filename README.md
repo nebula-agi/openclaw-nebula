@@ -69,12 +69,6 @@ No manual intervention needed.
 
 The AI can use these tools during conversations:
 
-#### `nebula_store`
-Save information to memory.
-```typescript
-nebula_store({ text: "User prefers dark mode", category: "preference" })
-```
-
 #### `nebula_search`
 Search stored memories.
 ```typescript
