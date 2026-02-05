@@ -1,6 +1,6 @@
 {
 	"name": "@nebula-ai/openclaw-nebula",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"type": "module",
 	"description": "OpenClaw Nebula memory plugin",
 	"license": "MIT",
