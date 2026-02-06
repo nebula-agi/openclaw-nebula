@@ -59,7 +59,7 @@ Then restart: `openclaw gateway restart`
 
 Once configured, the plugin automatically stores conversation turns as memories after each AI response.
 
-### MCP Tool
+### Agent Tool
 
 The AI agent can search stored memories during conversations:
 
@@ -67,7 +67,7 @@ The AI agent can search stored memories during conversations:
 Search stored memories for relevant context. The agent is encouraged to proactively use this tool to recall user preferences, past discussions, and relevant information before responding.
 
 ```typescript
-nebula_search({ query: "coding preferences", limit: 5 })
+nebula_search({ query: "coding preferences" })
 ```
 
 ### Slash Commands
