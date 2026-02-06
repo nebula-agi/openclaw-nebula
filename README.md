@@ -59,7 +59,7 @@ Then restart: `openclaw gateway restart`
 
 Once configured, the plugin automatically stores conversation turns as memories after each AI response.
 
-### MCP Tool
+### Agent Tool
 
 The AI agent can search stored memories during conversations:
 
