@@ -1,6 +1,6 @@
 {
 	"name": "@nebula-ai/openclaw-nebula",
-	"version": "1.0.3",
+	"version": "1.0.8",
 	"type": "module",
 	"description": "OpenClaw Nebula memory plugin",
 	"license": "MIT",
@@ -25,6 +25,10 @@
 	"devDependencies": {
 		"esbuild": "^0.27.2",
 		"typescript": "^5.9.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nebula-agi/openclaw-nebula"
 	},
 	"publishConfig": {
 		"access": "public"

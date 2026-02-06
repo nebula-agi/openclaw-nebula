@@ -28,10 +28,11 @@ export function registerCommands(
 				const sk = getSessionKey()
 				const sessionId = sk ? buildDocumentId(sk) : undefined
 				// Store directly to Nebula without pre-chunking
-				await client.addMemory(
-					text,
-					{ type: category, source: "openclaw_command", session: sessionId ?? "command" },
-				)
+				await client.addMemory(text, {
+					type: category,
+					source: "openclaw_command",
+					session: sessionId ?? "command",
+				})
 
 				const preview = text.length > 60 ? `${text.slice(0, 60)}…` : text
 				return { text: `Remembered: "${preview}"` }

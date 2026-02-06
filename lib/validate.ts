@@ -6,7 +6,10 @@
  * Validate Nebula API key format
  * Nebula uses simple bearer tokens without special prefixes
  */
-export function validateApiKeyFormat(apiKey: string): { valid: boolean; reason?: string } {
+export function validateApiKeyFormat(apiKey: string): {
+	valid: boolean
+	reason?: string
+} {
 	if (!apiKey || typeof apiKey !== "string") {
 		return { valid: false, reason: "API key is empty or not a string" }
 	}
@@ -22,7 +25,10 @@ export function validateApiKeyFormat(apiKey: string): { valid: boolean; reason?:
 /**
  * Validate collection name format
  */
-export function validateCollectionName(name: string): { valid: boolean; reason?: string } {
+export function validateCollectionName(name: string): {
+	valid: boolean
+	reason?: string
+} {
 	if (!name || typeof name !== "string") {
 		return { valid: false, reason: "name is empty" }
 	}
@@ -32,7 +38,8 @@ export function validateCollectionName(name: string): { valid: boolean; reason?:
 	if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
 		return {
 			valid: false,
-			reason: "name contains invalid characters (only alphanumeric, underscore, hyphen allowed)",
+			reason:
+				"name contains invalid characters (only alphanumeric, underscore, hyphen allowed)",
 		}
 	}
 	if (/^[-_]|[-_]$/.test(name)) {
@@ -45,15 +52,13 @@ export function validateCollectionName(name: string): { valid: boolean; reason?:
  * Remove problematic control characters and limit length
  */
 const CONTROL_CHAR_PATTERNS = [
+	// biome-ignore lint/suspicious/noControlCharactersInRegex: Intentionally checking for control characters
 	/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, // C0 control codes except \n
 	/\uFEFF/g, // Zero-width no-break space
 	/[\uFFF0-\uFFFF]/g, // Special Unicode range
 ]
 
-export function sanitizeContent(
-	content: string,
-	maxLength = 100_000,
-): string {
+export function sanitizeContent(content: string, maxLength = 100_000): string {
 	if (!content || typeof content !== "string") return ""
 
 	let cleaned = content
@@ -77,10 +82,16 @@ export function validateContentLength(
 	maxLength = 100_000,
 ): { valid: boolean; reason?: string } {
 	if (content.length < minLength) {
-		return { valid: false, reason: `content below minimum length (${minLength})` }
+		return {
+			valid: false,
+			reason: `content below minimum length (${minLength})`,
+		}
 	}
 	if (content.length > maxLength) {
-		return { valid: false, reason: `content exceeds maximum length (${maxLength})` }
+		return {
+			valid: false,
+			reason: `content exceeds maximum length (${maxLength})`,
+		}
 	}
 	return { valid: true }
 }
@@ -119,4 +130,3 @@ export function sanitizeMetadata(
 
 	return result
 }
-
