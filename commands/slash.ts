@@ -57,7 +57,7 @@ export function registerCommands(
 			log.debug(`/nebula-recall command: "${query}"`)
 
 			try {
-				const results = await client.search(query, 5)
+				const results = await client.search(query)
 
 				if (results.length === 0) {
 					return { text: `No memories found for: "${query}"` }
