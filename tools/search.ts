@@ -17,18 +17,11 @@ export function registerSearchTool(
 				"Search through long-term memories for relevant information using Nebula. IMPORTANT: You should proactively call this tool at the start of each conversation turn to check for relevant context, user preferences, or past discussions before responding.",
 			parameters: Type.Object({
 				query: Type.String({ description: "Search query" }),
-				limit: Type.Optional(
-					Type.Number({ description: "Max results (default: 5)" }),
-				),
 			}),
-			async execute(
-				_toolCallId: string,
-				params: { query: string; limit?: number },
-			) {
-				const limit = params.limit ?? 5
-				log.debug(`search tool: query="${params.query}" limit=${limit}`)
+			async execute(_toolCallId: string, params: { query: string }) {
+				log.debug(`search tool: query="${params.query}"`)
 
-				const results = await client.search(params.query, limit)
+				const results = await client.search(params.query)
 
 				if (results.length === 0) {
 					return {

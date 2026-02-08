@@ -18,12 +18,10 @@ export function registerCli(
 			cmd
 				.command("search")
 				.argument("<query>", "Search query")
-				.option("--limit <n>", "Max results", "5")
-				.action(async (query: string, opts: { limit: string }) => {
-					const limit = Number.parseInt(opts.limit, 10) || 5
-					log.debug(`cli search: query="${query}" limit=${limit}`)
+				.action(async (query: string) => {
+					log.debug(`cli search: query="${query}"`)
 
-					const results = await client.search(query, limit)
+					const results = await client.search(query)
 
 					if (results.length === 0) {
 						console.log("No memories found.")

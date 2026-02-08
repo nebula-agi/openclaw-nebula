@@ -61,10 +61,9 @@ export class NebulaClient {
 		return { id: memoryId }
 	}
 
-	async search(query: string, limit = 5): Promise<SearchResult[]> {
+	async search(query: string): Promise<SearchResult[]> {
 		log.debugRequest("search", {
 			query,
-			limit,
 			collectionId: this.collectionId,
 		})
 
@@ -73,7 +72,7 @@ export class NebulaClient {
 			collection_ids: [this.collectionId],
 		})
 
-		const utterances = (response.utterances || []).slice(0, limit)
+		const utterances = response.utterances || []
 
 		log.debugResponse("search", { count: utterances.length })
 		return utterances as SearchResult[]

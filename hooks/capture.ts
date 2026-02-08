@@ -3,6 +3,41 @@ import type { NebulaConfig } from "../config.ts"
 import { log } from "../logger.ts"
 import { buildDocumentId } from "../memory.ts"
 
+/**
+ * Messages that are entirely system/gateway noise and should be skipped.
+ * These match the FULL message content, not just a prefix.
+ */
+const SKIP_PATTERNS = [
+	// Gateway status: [timestamp] Platform gateway connected/disconnected/etc.
+	/^\[[\d\-\s:]+[A-Z]{2,4}\]\s+\w+\s+gateway\s+\w+\.?\s*$/i,
+	// Session lifecycle: [timestamp] Session started/ended/expired
+	/^\[[\d\-\s:]+[A-Z]{2,4}\]\s+.*session\s+\w+\.?\s*$/i,
+]
+
+/**
+ * Returns true if the message is entirely system noise and should be skipped.
+ */
+function isSystemNoise(text: string): boolean {
+	return SKIP_PATTERNS.some((p) => p.test(text.trim()))
+}
+
+/**
+ * Strip messaging platform metadata from start/end of content.
+ * Preserves any bracketed text in the middle of the message (likely user content).
+ */
+function cleanMessageContent(text: string): string {
+	return (
+		text
+			// Leading: message headers e.g. [WhatsApp +14697030568 +5m 2026-02-05 14:12 PST]
+			.replace(/^\[(?:[A-Za-z]+\s)?[+\d\s\-:]+\d{4}[\s\w]*\]\s*/m, "")
+			// Leading: reply/action markers e.g. [[reply_to_current]]
+			.replace(/^\[\[[^\]]*\]\]\s*/, "")
+			// Trailing: message IDs e.g. [message_id: 3A77687B7B36ACF62A66]
+			.replace(/\s*\[(?:message_id|msg_id):\s*[^\]]+\]\s*$/i, "")
+			.trim()
+	)
+}
+
 function getLastTurn(messages: unknown[]): unknown[] {
 	let lastUserIdx = -1
 	for (let i = messages.length - 1; i >= 0; i--) {
@@ -72,6 +107,12 @@ export function buildCaptureHandler(
 					.replace(/<nebula-context>[\s\S]*?<\/nebula-context>\s*/g, "")
 					.trim()
 			}
+
+			// Skip system/gateway noise (matched against full message)
+			if (isSystemNoise(content)) continue
+
+			// Strip messaging platform metadata (headers, IDs, reply markers)
+			content = cleanMessageContent(content)
 
 			// Skip empty or very short content
 			if (content.length < 10) continue
